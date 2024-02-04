@@ -8,7 +8,6 @@ program
 	.version(JSON.parse(packageJson).version || 0, '-v, --version')
 	.usage('[OPTIONS]...')
 	.option('-d, --debug', 'output logs to the console')
-	.option('-p, --predefined', 'create a predefined-classes.txt for labelImg to consume')
 	.option('-c, --card <value>', 'get images for a single card, e.g. -c HighEvolutionary')
 	.option('-a, --all', 'get images for all currently released cards')
 	.parse(process.argv);
@@ -21,7 +20,7 @@ const instance = axios.create({
 
 function logger(...logs) {
 	if (options.debug) {
-		console.log(logs);
+		console.log(...logs);
 	}
 }
 
@@ -99,16 +98,6 @@ async function getArtwork(card, variants = []) {
 const cards = await getCards();
 const cardNames = cards.map(({ defId }) => defId);
 const variants = await getArtVariants();
-
-// Generate `predefined-classes.txt`
-if (options.predefined) {
-	try {
-		fs.writeFileSync('./data/predefined_classes.txt', cardNames.join('\n'));
-		logger('📁', './data/predefined_classes.txt');
-	} catch (error) {
-		logger('⚠️', error);
-	}
-}
 
 // Get images for a single card
 if (options.card) {
